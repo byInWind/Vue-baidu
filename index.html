@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>百度一下</title>
+    <style>
+    ul{
+      border:1px solid;
+      list-style:none;
+      width: 460px;
+      margin:0 auto;
+    }
+        .active{
+            background: #ccc;
+        }
+        input{
+          display:block;
+          height: 50px;
+          width: 500px;
+          margin:0 auto;
+          border:1px solid blue;
+        }
+    </style>
+</head>
+<body>
+    <div id="box">
+        <input type="text" v-model="baidu" @keyup="get($event)" @keydown.down.prevent="changeDown()" @keydown.up.prevent="changeUp()">
+   <ul>
+    <li v-for="(value,index) in list" :class="{ active: index==now }">
+  {{value}}
+   </li>
+   </ul>
+    </div>
+     <script src="vue.min.js"></script>
+     <script src="vue-resource.js"></script>
+    <script>
+            new Vue({
+                el:'#box',
+                data:{
+                    baidu:'',
+                    list:[],
+                    //-1  即开始不显示#ccc按一下下才显示，0就是第一个
+                    now:-1
+                },
+                methods:{
+                    get:function (ev) {
+                      if(ev.keyCode==38 || ev.keyCode==40)return;
+                       if(ev.keyCode==13){
+                            window.open('https://www.baidu.com/s?wd='+this.baidu);
+                            this.baidu='';
+                        };
+                    	this.$http.jsonp('https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su',
+                    	{
+                    		wd:this.baidu
+                    	},{
+                    		jsonp:'cb'
+                    	}).then(function(data){
+                           this.list=data.data.s
+                    	},function(){
+
+                      })
+                    },
+                    changeDown:function(){
+                       this.now++;
+                       if (this.now==this.list.length) {
+                        this.now=0
+                       }
+                       this.baidu=this.list[this.now]
+                    },
+                    changeUp:function(){
+                       this.now--;
+                       //  -1-1 ==-2
+                       if (this.now==-2) {
+                        this.now=this.list.length-1;
+                        this.baidu=this.list[this.now]
+                       }
+                    }
+                }
+            });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
