@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,9 +10,9 @@
       width: 480px;
       position:absolute;
     }
-    .ulactive{
-      border:1px solid gray;
-    }
+     .ulactive{
+            border:1px solid gray;
+        }
         .active{
             background: #ccc;
         }
@@ -43,14 +44,14 @@
     </style>
 </head>
 <body>
-    <p>jsonp实现百度搜索功能</p>
+  
     <div id="box">
       <img src="https://www.baidu.com/img/bd_logo1.png" width="270" height="129">
       <section>
         <input class="bd" type="text" v-model="baidu" @keyup="get($event)" @keydown.down.prevent="changeDown()" @keydown.up.prevent="changeUp()">
-        <input type="button" value="百度一下" class="search">
+        <input type="button" @click="btn" value="百度一下" class="search">
       
-   <ul :class="{'ulactive':isulActive}">
+   <ul :class="{ ulactive:isulActive }">
     <li v-for="(value,index) in list" :class="{ active: index==now }" v-text="value">
  
    </li>
@@ -69,10 +70,26 @@
                     now:-1,
                     isulActive:false
                 },
+
                 methods:{
-                
+                btn:function(){
+                  window.open('https://www.baidu.com/s?wd='+this.baidu);
+                            this.baidu=''; 
+                              this.$http.jsonp('https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su',
+                      {
+                        wd:this.baidu
+                      },{
+                        jsonp:'cb'
+                      }).then(function(data){
+                           this.list=data.data.s;
+                           if (this.list.length>0) {
+                              this.isulActive=true
+                           }else{
+                              this.isulActive=false
+                           }
+                      })
+                },
                     get:function (ev) {
-                      this.isulActive=true;
                       if(ev.keyCode==38 || ev.keyCode==40)return;
                        if(ev.keyCode==13){
                             window.open('https://www.baidu.com/s?wd='+this.baidu);
@@ -84,7 +101,12 @@
                     	},{
                     		jsonp:'cb'
                     	}).then(function(data){
-                           this.list=data.data.s
+                           this.list=data.data.s;
+                            if (this.list.length>0) {
+                              this.isulActive=true
+                           }else{
+                              this.isulActive=false
+                           }
                     	})
                     },
                     changeDown:function(){
